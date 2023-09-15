@@ -36,6 +36,12 @@ namespace SM.Core.Unity.UI.MVVM
 				var genericTypeArguments = new Type[1];
 				foreach (var property in GetProperties())
 				{
+					// skip property if it's indexer.
+					if (property.GetIndexParameters().Length != 0)
+					{
+						continue;
+					}
+
 					genericTypeArguments[0] = property.PropertyType;
 					var getterType = typeof(Func<>).MakeGenericType(genericTypeArguments);
 					var setterType = typeof(Action<>).MakeGenericType(genericTypeArguments);

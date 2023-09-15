@@ -14,14 +14,26 @@ namespace SM.Core.Unity.UI.MVVM
 			set => SetValue(value);
 		}
 
+		public override object ObjectValue
+		{
+			get => _value;
+			set => SetValue((TValue)value);
+		}
+
 		public virtual void SetValue(TValue value)
 		{
 			_value = value;
 		}
 
-		public sealed override void SetValue(object value)
+		/// <summary>
+		/// Clear value on view model unbinding.
+		/// It's important to clear the Value to unsubscribe Value events or to clear some stuff.
+		/// In cases where this is not necessary you shouldn't clear the Value and may override this method.
+		/// It's useful to skip clearing in cases when you want to save state of ViewBinding (e.g. StateViewBinding).
+		/// </summary>
+		protected override void ClearValue()
 		{
-			SetValue((TValue)value);
+			Value = default;
 		}
 
 		protected sealed override void UpdateValueFromViewModel()
