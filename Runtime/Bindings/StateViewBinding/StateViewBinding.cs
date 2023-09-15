@@ -26,47 +26,12 @@ namespace SM.Core.Unity.UI.MVVM
 			}
 		}
 
-		[Serializable]
-		private struct StateTransition
-		{
-			[field: SerializeField]
-			internal TEnum FromValue { get; private set; }
-
-			[field: SerializeField]
-			internal TEnum ToValue { get; private set; }
-
-			[MaybeNull]
-			[field: SerializeField]
-			internal ViewState ViewState { get; set; }
-		}
-
 		[field: SerializeField]
 		private State[] States { get; set; }
 
-		[field: SerializeField]
-		private StateTransition[] StateTransitions { get; set; }
-
-		protected override void ClearValue()
-		{
-		}
-
 		public override void SetValue(TEnum value)
 		{
-			var fromValue = Value;
 			base.SetValue(value);
-
-			foreach (var stateTransition in StateTransitions)
-			{
-				if (EqualityComparer<TEnum>.Default.Equals(stateTransition.FromValue, fromValue) &&
-					EqualityComparer<TEnum>.Default.Equals(stateTransition.ToValue, value))
-				{
-					if (stateTransition.ViewState)
-					{
-						stateTransition.ViewState.Apply();
-					}
-					break;
-				}
-			}
 
 			foreach (var state in States)
 			{

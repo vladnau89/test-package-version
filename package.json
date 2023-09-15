@@ -1,6 +1,6 @@
 ﻿{
   "name": "com.sm.core.unity.ui.mvvm",
-  "version": "2.0.1",
+  "version": "1.0.0",
   "displayName": "SM Unity UI MVVM",
   "description": "Implementation of MVVM pattern for unity UGUI.",
   "unity": "2021.3",
