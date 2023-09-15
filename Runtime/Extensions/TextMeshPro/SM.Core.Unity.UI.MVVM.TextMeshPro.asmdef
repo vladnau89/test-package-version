@@ -1,0 +1,19 @@
+{
+    "name": "SM.Core.Unity.UI.MVVM.TextMeshPro",
+    "rootNamespace": "SM.Core.Unity.UI.MVVM.TextMeshPro",
+    "references": [
+        "SM.Core.Unity.UI.MVVM",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "TextMeshPro"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

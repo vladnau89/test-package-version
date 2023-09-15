@@ -1,0 +1,17 @@
+{
+    "name": "SM.Core.Unity.UI.MVVM.Samples.PhoneList",
+    "rootNamespace": "SM.Core.Unity.UI.MVVM.Samples.PhoneList",
+    "references": [
+        "SM.Core.Unity.UI.MVVM",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
