@@ -259,6 +259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PropertyName>k__BackingField: 
   <Bindings>k__BackingField:
+  - {fileID: 604979971555022494}
   - {fileID: 604979971568068680}
   - {fileID: 604979971836596260}
   - {fileID: 604979972512036507}
@@ -274,11 +275,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed1bbbe62fa4424ba1e4f0408066f81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <PropertyName>k__BackingField: 
+  <PropertyName>k__BackingField: Selectable
   <Bindings>k__BackingField:
+  - {fileID: 604979972066556342}
   - {fileID: 6433797177829137748}
-  - {fileID: 604979972066556342}
-  - {fileID: 604979972066556342}
 --- !u!1 &604979971568068682
 GameObject:
   m_ObjectHideFlags: 0
@@ -357,8 +357,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PropertyName>k__BackingField: Tags
-  <ItemPrefab>k__BackingField: {fileID: 604979970873194229}
   <SelectedPropertyName>k__BackingField: 
+  <ItemPrefab>k__BackingField: {fileID: 604979970873194229}
   <ViewPool>k__BackingField: {fileID: 0}
 --- !u!1 &604979971836596262
 GameObject:
@@ -650,7 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe39a3c2c21475ba41707d2eef8602b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <PropertyName>k__BackingField: SelectCommand
+  <PropertyName>k__BackingField: SelectSelfCommand
   <CanExecute>k__BackingField: {fileID: 0}
   <ParameterPropertyName>k__BackingField: 
   <Button>k__BackingField: {fileID: 604979972066556341}

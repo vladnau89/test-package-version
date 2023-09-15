@@ -26,10 +26,10 @@ namespace SM.Core.Unity.UI.MVVM
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected ViewModel()
+		protected ViewModel(bool active = true)
 		{
 			GenericObject = new GenericObject(this);
-			Active = true;
+			_active = active;
 		}
 
 		public T GetProperty<T>(string propertyName)
