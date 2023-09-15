@@ -27,6 +27,7 @@ namespace SM.Core.Unity.UI.MVVM
 		protected override void OnDestroy()
 		{
 			base.OnDestroy();
+			Value = null;
 			Button.onClick.RemoveListener(OnActionPerformed);
 		}
 	}

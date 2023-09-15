@@ -39,16 +39,13 @@ namespace SM.Core.Unity.UI.MVVM
 		public override void SetValue(TViewModel value)
 		{
 			base.SetValue(value);
-
+			
 			foreach (var binding in Bindings)
 			{
 				binding.ViewModel = value;
 			}
 
-			if (value != null)
-			{
-				SetViewModelSettings();
-			}
+			SetViewModelSettings();
 		}
 
 		protected virtual void SetViewModelSettings()

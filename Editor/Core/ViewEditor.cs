@@ -38,7 +38,7 @@ namespace SM.Core.Unity.UI.MVVM.Editor
 			
 			var flags = BindingFlags.Instance | BindingFlags.Public;
 			var viewModelType = target.GetType().BaseType.GetGenericArguments()[0];
-			var properties = viewModelType.GetProperties(flags).Where(p => p.GetIndexParameters().Length == 0);
+			var properties = viewModelType.GetProperties(flags);
 			foreach (var property in properties)
 			{
 				gropedBindings.TryGetValue(property.Name, out var propertyBindings);
@@ -51,9 +51,8 @@ namespace SM.Core.Unity.UI.MVVM.Editor
 					var objectPicker = new ObjectPickerDropdown<ViewBinding>(
 						(selectedValue) =>
 						{
-							var newElementIndex = Bindings.arraySize;
-							Bindings.InsertArrayElementAtIndex(newElementIndex);
-							var newBinding = Bindings.GetArrayElementAtIndex(newElementIndex);
+							Bindings.InsertArrayElementAtIndex(0);
+							var newBinding = Bindings.GetArrayElementAtIndex(0);
 							newBinding.objectReferenceValue = selectedValue;
 							var so = new SerializedObject(selectedValue);
 							so.FindAutoProperty("PropertyName").stringValue = property.Name;

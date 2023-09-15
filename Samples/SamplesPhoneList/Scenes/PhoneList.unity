@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.006667961, g: 0.0067349058, b: 0.00712334, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1456,8 +1456,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PropertyName>k__BackingField: Phones
-  <SelectedPropertyName>k__BackingField: SelectedPhone
   <ItemPrefab>k__BackingField: {fileID: 604979971555022493, guid: 863b1440d81f69e449d893b185239ffc, type: 3}
+  <SelectedPropertyName>k__BackingField: SelectedPhone
   <ViewPool>k__BackingField: {fileID: 0}
 --- !u!114 &863629661
 MonoBehaviour:

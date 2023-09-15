@@ -1,34 +1,29 @@
-﻿// Copyright (c) Saber BGS 2023. All rights reserved.
-// ---------------------------------------------------------------------------------------------
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace SM.Core.Unity.UI.MVVM
 {
-	public abstract class CollectionViewBinding<TCollection>: TypedViewBinding<TCollection>
+	public class CollectionViewBinding: TypedViewBinding<INotifyCollectionChanged>
 	{
-		private readonly struct Item
-		{
-			public ViewBinding ViewBinding { get; }
-
-			[MaybeNull]
-			public SelectableViewModel Selectable { get; }
-
-			public Item(ViewBinding viewBinding, [MaybeNull] SelectableViewModel selectable)
-			{
-				ViewBinding = viewBinding;
-				Selectable = selectable;
-			}
-		}
+		[field: SerializeField]
+		private ViewBinding ItemPrefab { get; set; }
 
 		[MaybeNull]
 		[field: SerializeField]
 		private string SelectedPropertyName { get; set; }
+
+		[MaybeNull]
+		[field: SerializeField]
+		private ViewPool ViewPool { get; set; }
+
+		private IViewPool _pool;
+
+		private IViewPool Pool => _pool ??= ViewPool ? ViewPool : new EmptyViewPool();
 
 		[MaybeNull]
 		private object SelectedValue
@@ -40,9 +35,15 @@ namespace SM.Core.Unity.UI.MVVM
 		[MaybeNull]
 		public object SelectedItem { get; private set; }
 
-		private List<Item> Items { get; } = new();
+		private List<(ViewBinding, SelectableViewModel)> Items { get; } = new();
 
 		public event EventHandler SelectedItemChanged;
+
+		protected override void OnDestroy()
+		{
+			base.OnDestroy();
+			Value = null;
+		}
 
 		protected override void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
@@ -50,44 +51,86 @@ namespace SM.Core.Unity.UI.MVVM
 			if (SelectedPropertyName == args.PropertyName)
 			{
 				var selectedValue = SelectedValue;
-				foreach (var item in Items)
+				var newSelectedItem = default(ViewBinding);
+				foreach (var (viewBinding, selectableViewModel) in Items)
 				{
-					if (item.Selectable != null)
+					if (selectableViewModel.Value == selectedValue)
 					{
-						if (selectedValue == null)
-						{
-							item.Selectable.Selected = false;
-						}
-						else if (item.ViewBinding.ObjectValue == selectedValue)
-						{
-							item.Selectable.Selected = true;
-							return;
-						}
+						newSelectedItem = viewBinding;
+						selectableViewModel.Selected = true;
+					}
+					else
+					{
+						selectableViewModel.Selected = false;
 					}
 				}
+
+				SelectedItem = newSelectedItem;
+				SelectedItemChanged?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
-		protected abstract ViewBinding CreateViewBinding(int index);
-
-		protected abstract void DestroyViewBinding(ViewBinding viewBinding);
-
-		protected void Add(int index, object value)
+		public override void SetValue(INotifyCollectionChanged value)
 		{
-			var viewBinding = CreateViewBinding(index);
-			viewBinding.ObjectValue = value;
-
-			var selectable = default(SelectableViewModel);
-			if (value is IHavingSelectable havingSelectable)
+			// todo: add editor time validation
+			if (value != null && value is not IList)
 			{
-				selectable = havingSelectable.Selectable;
-				selectable.PropertyChanged += OnSelectablePropertyChanged;
+				throw new ArgumentException($"Parameter must implement {nameof(IList)}.", nameof(value));
 			}
 
-			Items.Insert(index, new Item(viewBinding, selectable));
+			if (Value != null)
+			{
+				Value.CollectionChanged -= OnCollectionChanged;
+				RemoveAll();
+			}
+
+			base.SetValue(value);
+
+			if (Value != null)
+			{
+				Value.CollectionChanged += OnCollectionChanged;
+				AddRange((IList)value);
+			}
 		}
 
-		protected void AddRange(IList values)
+		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			switch (args.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					Add(args.NewStartingIndex, args.NewItems[0]);
+					break;
+				case NotifyCollectionChangedAction.Move:
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					Remove(args.OldStartingIndex);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		private void Add(int index, object value)
+		{
+			var item = Pool.Spawn(ItemPrefab);
+			item.transform.SetParent(transform, false);
+			item.SetValue(value);
+
+			var selectableViewModel = default(SelectableViewModel);
+			if (item.TryGetComponent<SelectableView>(out var selectableItem))
+			{
+				selectableViewModel = new SelectableViewModel(value, value == SelectedValue, x => SelectedValue = x);
+				selectableItem.Value = selectableViewModel;
+			}
+
+			Items.Insert(index, (item, selectableViewModel));
+		}
+
+		private void AddRange(IList values)
 		{
 			for (var i = 0; i < values.Count; i++)
 			{
@@ -95,61 +138,20 @@ namespace SM.Core.Unity.UI.MVVM
 			}
 		}
 
-		protected void Remove(int index)
+		private void Remove(int index)
 		{
-			var item = Items[index];
-
-			item.ViewBinding.ObjectValue = null;
-			DestroyViewBinding(item.ViewBinding);
-
-			if (item.Selectable != null)
-			{
-				item.Selectable.PropertyChanged -= OnSelectablePropertyChanged;
-			}
-
+			var item = Items[index].Item1;
 			Items.RemoveAt(index);
+			Pool.Despawn(item);
 		}
 
-		protected void RemoveAll()
+		private void RemoveAll()
 		{
-			foreach (var item in Items)
+			foreach (var (item, _) in Items)
 			{
-				if (item.Selectable != null)
-				{
-					item.Selectable.PropertyChanged -= OnSelectablePropertyChanged;
-				}
-
-				item.ViewBinding.ObjectValue = null;
-				DestroyViewBinding(item.ViewBinding);
+				Pool.Despawn(item);
 			}
 			Items.Clear();
-		}
-
-		private void OnSelectablePropertyChanged(object sender, PropertyChangedEventArgs args)
-		{
-			var selectable = (SelectableViewModel)sender;
-			if (args.PropertyName == nameof(SelectableViewModel.Selected) && selectable.Selected)
-			{
-				var newViewBinding = default(ViewBinding);
-				foreach (var item in Items)
-				{
-					if (item.Selectable != null)
-					{
-						if (item.Selectable == selectable)
-						{
-							newViewBinding = item.ViewBinding;
-						}
-						else
-						{
-							item.Selectable.Selected = false;
-						}
-					}
-				}
-
-				SelectedValue = newViewBinding ? newViewBinding.ObjectValue : null;
-				SelectedItem = newViewBinding;
-				SelectedItemChanged?.Invoke(this, EventArgs.Empty);
-			}
 		}
 	}
 }
