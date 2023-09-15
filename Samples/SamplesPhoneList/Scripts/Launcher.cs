@@ -11,5 +11,10 @@ namespace SM.Core.Unity.UI.MVVM.Samples.PhoneList
 		{
 			PhoneListWindow.Value = new PhoneListViewModel();
 		}
+
+		private void OnDestroy()
+		{
+			PhoneListWindow.Value = null;
+		}
 	}
 }

@@ -19,9 +19,16 @@ namespace SM.Core.Unity.UI.MVVM
 			get => _viewModel;
 			set
 			{
+				if (_viewModel == value)
+				{
+					return;
+				}
+
 				if (_viewModel != null)
 				{
 					_viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+					_viewModel = null; // set _viewModel to null before value clearing to prevent clearing of _viewModel
+					ClearValue();
 				}
 
 				_viewModel = value;
@@ -34,12 +41,9 @@ namespace SM.Core.Unity.UI.MVVM
 			}
 		}
 
-		protected virtual void OnDestroy()
-		{
-			ViewModel = null;
-		}
+		public abstract object ObjectValue { get; set; }
 
-		public abstract void SetValue(object value);
+		protected abstract void ClearValue();
 
 		protected abstract void UpdateValueFromViewModel();
 
@@ -54,6 +58,11 @@ namespace SM.Core.Unity.UI.MVVM
 			{
 				UpdateValueFromViewModel();
 			}
+		}
+
+		protected virtual void OnDestroy()
+		{
+			ViewModel = null;
 		}
 	}
 }
