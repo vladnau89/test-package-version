@@ -2,17 +2,18 @@ using System;
 
 namespace SM.Core.Unity.UI.MVVM
 {
-	public class SelectableViewModel: ViewModel
+	public class SelectableViewModel
 	{
 		private bool _selected;
 
 		public bool Selected
 		{
 			get => _selected;
-			set => SetField(ref _selected, value);
+			set
+			{
+				
+			}
 		}
-
-		public ICommand<object> SelectCommand { get; }
 
 		public object Value { get; }
 
@@ -20,7 +21,6 @@ namespace SM.Core.Unity.UI.MVVM
 		{
 			Value = value;
 			Selected = selected;
-			SelectCommand = new DefaultCommand<object>((_) => select(Value));
 		}
 	}
 }
