@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SM.Core.Unity.UI.MVVM
 {
-	public class DynamicCollectionViewBinding: CollectionViewBinding<INotifyCollectionChanged>
+	public class DynamicCollectionViewBinding: CollectionViewBinding<object>
 	{
 		
 	}
